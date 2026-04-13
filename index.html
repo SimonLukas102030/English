@@ -3,108 +3,102 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Australia Mind Map with Images</title>
-    <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+    <title>Professional Australia Mindmap</title>
+    <script type="text/javascript" src="https://unpkg.com/vis-network/standalone/umd/vis-network.min.js"></script>
     <style>
-        body {
-            font-family: 'Segoe UI', sans-serif;
-            background-color: #f8f9fa;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            padding: 20px;
-        }
-        .container {
-            background: white;
-            padding: 30px;
-            border-radius: 15px;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
-            max-width: 1100px;
+        body, html {
+            margin: 0;
+            padding: 0;
             width: 100%;
+            height: 100%;
+            overflow: hidden;
+            background-color: #f4f7f6;
+            font-family: 'Inter', -apple-system, sans-serif;
         }
-        h1 { color: #003366; text-align: center; margin-bottom: 30px; }
-        .mermaid { margin: 20px 0; }
-        
-        .image-gallery {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-            gap: 15px;
-            margin-top: 40px;
-            border-top: 2px solid #eee;
-            padding-top: 20px;
+        #mindmap {
+            width: 100vw;
+            height: 100vh;
         }
-        .img-item {
-            text-align: center;
-            font-size: 0.85rem;
+        .header {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            z-index: 10;
+            pointer-events: none;
         }
-        .img-item img {
-            width: 100%;
-            height: 120px;
-            object-fit: cover;
-            border-radius: 8px;
-            transition: transform 0.2s;
-        }
-        .img-item img:hover {
-            transform: scale(1.05);
-        }
-        .source-link {
-            display: block;
-            margin-top: 5px;
-            color: #007bff;
-            text-decoration: none;
-        }
+        h1 { margin: 0; font-size: 1.5rem; color: #2d3436; font-weight: 300; }
     </style>
 </head>
 <body>
 
-<div class="container">
-    <h1>Australia Mind Map</h1>
-
-    <pre class="mermaid">
-    mindmap
-      root((Australia))
-        Landmarks
-            Sydney Opera
-            Uluru
-        Nature
-            Great Barrier Reef
-            Outback
-        Wildlife
-            Quokka
-            Kangaroo
-        Lifestyle
-            Cricket
-            Bondi Beach
-        Issues
-            Bushfires
-    </pre>
-
-    <div class="image-gallery">
-        <div class="img-item">
-            <img src="https://images.unsplash.com/photo-1624138784614-87fd1b6528f8?auto=format&fit=crop&w=300" alt="Sydney Opera">
-            <strong>Sydney Opera</strong>
-        </div>
-        <div class="img-item">
-            <img src="https://images.unsplash.com/photo-1529108190281-9a4f620bc2d8?auto=format&fit=crop&w=300" alt="Uluru">
-            <strong>Uluru</strong>
-        </div>
-        <div class="img-item">
-            <img src="https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=300" alt="Reef">
-            <strong>Barrier Reef</strong>
-        </div>
-        <div class="img-item">
-            <img src="https://images.unsplash.com/photo-1533411440124-7e8739943343?auto=format&fit=crop&w=300" alt="Quokka">
-            <strong>Quokka</strong>
-        </div>
-        <div class="img-item">
-            <img src="https://images.unsplash.com/photo-1506755855567-92ff770e8d30?auto=format&fit=crop&w=300" alt="Bushfires">
-            <strong>Bushfires</strong>
-        </div>
-    </div>
+<div class="header">
+    <h1>Australia Exploration</h1>
 </div>
+<div id="mindmap"></div>
 
-<script>
-    mermaid.initialize({ startOnLoad: true, theme: 'neutral' });
+<script type="text/javascript">
+    const nodes = new vis.DataSet([
+        // Root
+        { id: 1, label: 'Australia', shape: 'circle', color: '#2d3436', font: { color: 'white', size: 20 }, fixed: false },
+
+        // GTA YouTubers (Red)
+        { id: 2, label: 'GTA YouTubers', color: { background: '#ff7675', border: '#d63031' }, shape: 'box', margin: 10 },
+
+        // Geography (Blue)
+        { id: 3, label: 'Looks like a\nbig island', color: { background: '#74b9ff', border: '#0984e3' }, shape: 'box', margin: 10 },
+
+        // Cities (Purple)
+        { id: 4, label: 'Sydney', image: 'https://images.unsplash.com/photo-1506973035872-a4ec16b8e8d9?auto=format&fit=crop&w=150&q=80', shape: 'circularImage', color: { border: '#6c5ce7' } },
+
+        // Nature (Green)
+        { id: 5, label: 'Weird out of place\nmountains', color: { background: '#55efc4', border: '#00b894' }, shape: 'box', margin: 10 },
+        { id: 6, label: 'Uluru', image: 'https://images.unsplash.com/photo-1529108190281-9a4f620bc2d8?auto=format&fit=crop&w=150&q=80', shape: 'circularImage', color: { border: '#00b894' } },
+
+        // Scary Animals (Yellow)
+        { id: 7, label: 'Scary Animals', color: { background: '#ffeaa7', border: '#fdcb6e' }, shape: 'box', margin: 10 },
+        { id: 8, label: 'Spiders', image: 'https://images.unsplash.com/photo-1521320226546-87b106956014?auto=format&fit=crop&w=150&q=80', shape: 'circularImage', color: { border: '#fdcb6e' } },
+        { id: 9, label: 'Boxers (Kangaroos)', image: 'https://images.unsplash.com/photo-1521633393421-4d9f67645391?auto=format&fit=crop&w=150&q=80', shape: 'circularImage', color: { border: '#fdcb6e' } }
+    ]);
+
+    const edges = new vis.DataSet([
+        { from: 1, to: 2, color: '#d63031', width: 3 }, // Root to GTA
+        { from: 1, to: 3, color: '#0984e3', width: 3 }, // Root to Island
+        { from: 1, to: 4, color: '#6c5ce7', width: 3 }, // Root to Sydney
+        { from: 1, to: 5, color: '#00b894', width: 3 }, // Root to Mountains
+        { from: 5, to: 6, color: '#00b894', width: 2, dashes: true }, // Mountains to Uluru
+        { from: 1, to: 7, color: '#fdcb6e', width: 3 }, // Root to Scary
+        { from: 7, to: 8, color: '#fdcb6e', width: 2 }, // Scary to Spiders
+        { from: 7, to: 9, color: '#fdcb6e', width: 2 }  // Scary to Boxers
+    ]);
+
+    const container = document.getElementById('mindmap');
+    const data = { nodes: nodes, edges: edges };
+    
+    const options = {
+        nodes: {
+            font: { face: 'Inter' },
+            borderWidth: 2,
+            shadow: true
+        },
+        edges: {
+            smooth: { type: 'cubicBezier', forceDirection: 'horizontal', roundness: 0.5 },
+            shadow: true
+        },
+        physics: {
+            enabled: true,
+            barnesHut: {
+                gravitationalConstant: -2000,
+                centralGravity: 0.3,
+                springLength: 150
+            }
+        },
+        interaction: {
+            hover: true,
+            zoomView: true
+        }
+    };
+
+    const network = new vis.Network(container, data, options);
 </script>
 
 </body>
