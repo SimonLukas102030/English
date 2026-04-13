@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Australia Mind Map with Images</title>
+    <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+    <style>
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            background-color: #f8f9fa;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+            max-width: 1100px;
+            width: 100%;
+        }
+        h1 { color: #003366; text-align: center; margin-bottom: 30px; }
+        .mermaid { margin: 20px 0; }
+        
+        .image-gallery {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 15px;
+            margin-top: 40px;
+            border-top: 2px solid #eee;
+            padding-top: 20px;
+        }
+        .img-item {
+            text-align: center;
+            font-size: 0.85rem;
+        }
+        .img-item img {
+            width: 100%;
+            height: 120px;
+            object-fit: cover;
+            border-radius: 8px;
+            transition: transform 0.2s;
+        }
+        .img-item img:hover {
+            transform: scale(1.05);
+        }
+        .source-link {
+            display: block;
+            margin-top: 5px;
+            color: #007bff;
+            text-decoration: none;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>Australia Mind Map</h1>
+
+    <pre class="mermaid">
+    mindmap
+      root((Australia))
+        Landmarks
+            Sydney Opera
+            Uluru
+        Nature
+            Great Barrier Reef
+            Outback
+        Wildlife
+            Quokka
+            Kangaroo
+        Lifestyle
+            Cricket
+            Bondi Beach
+        Issues
+            Bushfires
+    </pre>
+
+    <div class="image-gallery">
+        <div class="img-item">
+            <img src="https://images.unsplash.com/photo-1624138784614-87fd1b6528f8?auto=format&fit=crop&w=300" alt="Sydney Opera">
+            <strong>Sydney Opera</strong>
+        </div>
+        <div class="img-item">
+            <img src="https://images.unsplash.com/photo-1529108190281-9a4f620bc2d8?auto=format&fit=crop&w=300" alt="Uluru">
+            <strong>Uluru</strong>
+        </div>
+        <div class="img-item">
+            <img src="https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=300" alt="Reef">
+            <strong>Barrier Reef</strong>
+        </div>
+        <div class="img-item">
+            <img src="https://images.unsplash.com/photo-1533411440124-7e8739943343?auto=format&fit=crop&w=300" alt="Quokka">
+            <strong>Quokka</strong>
+        </div>
+        <div class="img-item">
+            <img src="https://images.unsplash.com/photo-1506755855567-92ff770e8d30?auto=format&fit=crop&w=300" alt="Bushfires">
+            <strong>Bushfires</strong>
+        </div>
+    </div>
+</div>
+
+<script>
+    mermaid.initialize({ startOnLoad: true, theme: 'neutral' });
+</script>
+
+</body>
+</html>
