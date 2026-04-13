@@ -14,9 +14,39 @@
             --accent: #0984e3;
             --bg: #ffffff;
         }
-        body, html { margin: 0; padding: 0; height: 100%; font-family: 'Segoe UI', sans-serif; background: var(--bg); overflow: hidden; }
+        body, html { margin: 0; padding: 0; height: 100%; font-family: 'Segoe UI', sans-serif; background: var(--bg); overflow: hidden; transition: filter 0.1s; }
         
-        /* Navigation */
+        /* THE "AWFULL" WOW EFFECT */
+        .wow-mode {
+            animation: rainbow-puke 0.2s infinite alternate;
+            cursor: wait;
+        }
+        @keyframes rainbow-puke {
+            0% { filter: hue-rotate(0deg) invert(0.5) contrast(200%); background: #ff00ff; }
+            100% { filter: hue-rotate(360deg) invert(0) contrast(500%); background: #00ff00; }
+        }
+
+        #wow-overlay {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; width: 100vw; height: 100vh;
+            background: rgba(255,0,0,0.5);
+            z-index: 9999;
+            justify-content: center;
+            align-items: center;
+        }
+        #wow-overlay img {
+            max-width: 90%;
+            max-height: 90%;
+            animation: shake 0.1s infinite;
+        }
+        @keyframes shake {
+            0% { transform: translate(1px, 1px) rotate(0deg); }
+            50% { transform: translate(-3px, -2px) rotate(-5deg); }
+            100% { transform: translate(1px, -1px) rotate(5deg); }
+        }
+
+        /* Standard Layout */
         header {
             display: flex;
             justify-content: center;
@@ -36,23 +66,19 @@
             transition: 0.2s;
         }
         .tab-btn.active { background: var(--primary); color: white; }
-        
-        /* Layout */
         .page { display: none; height: calc(100vh - 70px); width: 100%; }
         .page.active { display: block; }
-
-        /* Mindmap Page */
         .markmap { width: 100%; height: 100%; }
-
-        /* Info Page */
         #info-page { padding: 40px; overflow-y: auto; max-width: 800px; margin: 0 auto; line-height: 1.6; }
         .info-card { background: #f1f2f6; padding: 20px; border-radius: 10px; margin-bottom: 20px; border-left: 5px solid var(--primary); }
-
-        /* Map Page */
         #map { width: 100%; height: 100%; }
     </style>
 </head>
 <body>
+
+<div id="wow-overlay">
+    <img src="wow.png" alt="WOW">
+</div>
 
 <header>
     <button class="tab-btn active" onclick="showPage('mindmap')">Mindmap</button>
@@ -69,16 +95,20 @@ markmap:
 ---
 # Australia
 ## GTA YouTubers
-- <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTmxQMSLPHFJmpFts-vrSWS0D3lAr00DbNqgD2Ll9hqDQ&s=10" width="20"/> Cool stuff
+- DarkViperAU 
+- Chaos mod 
 ## Scarry animals
 - spiders 🕷️
 - Boxers 🦘
-## sydney
-- <img src="https://images.unsplash.com/photo-1506973035872-a4ec16b8e8d9?w=100" width="80" style="border-radius:5px"/>
-## wird outoff place mountains
-### Uluru
-- <img src="https://images.unsplash.com/photo-1529108190281-9a4f620bc2d8?w=100" width="80" style="border-radius:5px"/>
-## looks like a big island
+## Cities
+### sydney
+- Opera House
+## Nature & Vibes
+### wird outoff place mountains
+- Uluru 🧱
+## Food & Life
+- Vegemite 🍞
+- Hot as hell ☀️🔥
         </script>
     </div>
 </div>
@@ -86,15 +116,7 @@ markmap:
 <div id="info-page" class="page">
     <div class="info-card">
         <h3>General</h3>
-        <p>Australia is basically just a big island with some wird outoff place mountains in the middle. Uluru is there. Its red.</p>
-    </div>
-    <div class="info-card">
-        <h3>Animals</h3>
-        <p>Everything wants to kill u. Spiders are huge. Kangaroos are basically boxers. Dont touch.</p>
-    </div>
-    <div class="info-card">
-        <h3>YouTube</h3>
-        <p>Lots of GTA YouTubers there for some reason. Maybe they like the chaos.</p>
+        <p>Australia is basically just a big island with some wird outoff place mountains. Type "wow" to see magic.</p>
     </div>
 </div>
 
@@ -106,26 +128,38 @@ markmap:
     function showPage(pageId) {
         document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
         document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-        
         document.getElementById(pageId).classList.add('active');
         event.currentTarget.classList.add('active');
-
-        // Fix Leaflet sizing when tab is switched
-        if(pageId === 'map-page') {
-            setTimeout(() => { map.invalidateSize(); }, 100);
-        }
+        if(pageId === 'map-page') { setTimeout(() => { map.invalidateSize(); }, 100); }
     }
 
-    // Initialize Map
     var map = L.map('map').setView([-25.2744, 133.7751], 4);
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-        attribution: '© OpenStreetMap'
-    }).addTo(map);
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
 
-    // Add Uluru Marker
-    L.marker([-25.3444, 131.0369]).addTo(map)
-        .bindPopup('Uluru (The wird mountain)')
-        .openPopup();
+    // WOW TRIGGER LOGIC
+    let inputBuffer = "";
+    window.addEventListener("keydown", (e) => {
+        inputBuffer += e.key.toLowerCase();
+        inputBuffer = inputBuffer.slice(-3); // Keep last 3 chars
+
+        if (inputBuffer === "wow") {
+            triggerWow();
+        }
+    });
+
+    function triggerWow() {
+        const body = document.body;
+        const overlay = document.getElementById('wow-overlay');
+        
+        body.classList.add('wow-mode');
+        overlay.style.display = 'flex';
+
+        setTimeout(() => {
+            body.classList.remove('wow-mode');
+            overlay.style.display = 'none';
+            inputBuffer = ""; 
+        }, 5000);
+    }
 </script>
 
 </body>
