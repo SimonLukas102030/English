@@ -16,37 +16,47 @@
         }
         body, html { margin: 0; padding: 0; height: 100%; font-family: 'Segoe UI', sans-serif; background: var(--bg); overflow: hidden; transition: filter 0.1s; }
         
-        /* THE "AWFULL" WOW EFFECT */
+        /* WOW EFFECT (Chaos) */
         .wow-mode {
             animation: rainbow-puke 0.2s infinite alternate;
-            cursor: wait;
         }
         @keyframes rainbow-puke {
             0% { filter: hue-rotate(0deg) invert(0.5) contrast(200%); background: #ff00ff; }
             100% { filter: hue-rotate(360deg) invert(0) contrast(500%); background: #00ff00; }
         }
 
-        #wow-overlay {
+        /* LEVEL UP EFFECT (Speed/Green) */
+        .levelup-mode {
+            animation: level-flash 0.3s infinite;
+        }
+        @keyframes level-flash {
+            0% { background: #ffffff; filter: brightness(1); }
+            50% { background: #2ecc71; filter: brightness(1.5) contrast(150%); }
+            100% { background: #ffffff; filter: brightness(1); }
+        }
+
+        .overlay {
             display: none;
             position: fixed;
             top: 0; left: 0; width: 100vw; height: 100vh;
-            background: rgba(255,0,0,0.5);
             z-index: 9999;
             justify-content: center;
             align-items: center;
+            pointer-events: none;
         }
-        #wow-overlay img {
-            max-width: 90%;
-            max-height: 90%;
-            animation: shake 0.1s infinite;
+        .overlay img {
+            max-width: 80%;
+            max-height: 80%;
         }
+        
+        .shake-anim { animation: shake 0.1s infinite; }
         @keyframes shake {
-            0% { transform: translate(1px, 1px) rotate(0deg); }
-            50% { transform: translate(-3px, -2px) rotate(-5deg); }
-            100% { transform: translate(1px, -1px) rotate(5deg); }
+            0% { transform: translate(2px, 2px); }
+            50% { transform: translate(-4px, -3px); }
+            100% { transform: translate(2px, -2px); }
         }
 
-        /* Standard Layout */
+        /* Layout */
         header {
             display: flex;
             justify-content: center;
@@ -76,8 +86,12 @@
 </head>
 <body>
 
-<div id="wow-overlay">
-    <img src="wow.png" alt="WOW">
+<div id="wow-overlay" class="overlay">
+    <img src="wow.png" class="shake-anim" alt="WOW">
+</div>
+
+<div id="levelup-overlay" class="overlay">
+    <img src="levelupfast.png" class="shake-anim" alt="LEVEL UP">
 </div>
 
 <header>
@@ -115,8 +129,9 @@ markmap:
 
 <div id="info-page" class="page">
     <div class="info-card">
-        <h3>General</h3>
-        <p>Australia is basically just a big island with some wird outoff place mountains. Type "wow" to see magic.</p>
+        <h3>Easter Eggs</h3>
+        <p>Type "wow" for chaos.</p>
+        <p>Type "levelupfast" for the grind.</p>
     </div>
 </div>
 
@@ -136,26 +151,28 @@ markmap:
     var map = L.map('map').setView([-25.2744, 133.7751], 4);
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
 
-    // WOW TRIGGER LOGIC
     let inputBuffer = "";
     window.addEventListener("keydown", (e) => {
         inputBuffer += e.key.toLowerCase();
-        inputBuffer = inputBuffer.slice(-3); // Keep last 3 chars
+        inputBuffer = inputBuffer.slice(-15); 
 
-        if (inputBuffer === "wow") {
-            triggerWow();
+        if (inputBuffer.endsWith("wow")) {
+            triggerEffect('wow-mode', 'wow-overlay');
+        }
+        if (inputBuffer.endsWith("levelupfast")) {
+            triggerEffect('levelup-mode', 'levelup-overlay');
         }
     });
 
-    function triggerWow() {
+    function triggerEffect(className, overlayId) {
         const body = document.body;
-        const overlay = document.getElementById('wow-overlay');
+        const overlay = document.getElementById(overlayId);
         
-        body.classList.add('wow-mode');
+        body.classList.add(className);
         overlay.style.display = 'flex';
 
         setTimeout(() => {
-            body.classList.remove('wow-mode');
+            body.classList.remove(className);
             overlay.style.display = 'none';
             inputBuffer = ""; 
         }, 5000);
