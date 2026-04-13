@@ -3,102 +3,129 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Professional Australia Mindmap</title>
-    <script type="text/javascript" src="https://unpkg.com/vis-network/standalone/umd/vis-network.min.js"></script>
+    <title>Australia Project</title>
+    <script src="https://cdn.jsdelivr.net/npm/markmap-autoloader"></script>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    
     <style>
-        body, html {
-            margin: 0;
-            padding: 0;
-            width: 100%;
-            height: 100%;
-            overflow: hidden;
-            background-color: #f4f7f6;
-            font-family: 'Inter', -apple-system, sans-serif;
+        :root {
+            --primary: #2d3436;
+            --accent: #0984e3;
+            --bg: #ffffff;
         }
-        #mindmap {
-            width: 100vw;
-            height: 100vh;
+        body, html { margin: 0; padding: 0; height: 100%; font-family: 'Segoe UI', sans-serif; background: var(--bg); overflow: hidden; }
+        
+        /* Navigation */
+        header {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            padding: 15px;
+            background: #f8f9fa;
+            border-bottom: 1px solid #ddd;
+            z-index: 100;
         }
-        .header {
-            position: absolute;
-            top: 20px;
-            left: 20px;
-            z-index: 10;
-            pointer-events: none;
+        .tab-btn {
+            padding: 8px 20px;
+            border: none;
+            background: none;
+            cursor: pointer;
+            font-size: 16px;
+            border-radius: 5px;
+            transition: 0.2s;
         }
-        h1 { margin: 0; font-size: 1.5rem; color: #2d3436; font-weight: 300; }
+        .tab-btn.active { background: var(--primary); color: white; }
+        
+        /* Layout */
+        .page { display: none; height: calc(100vh - 70px); width: 100%; }
+        .page.active { display: block; }
+
+        /* Mindmap Page */
+        .markmap { width: 100%; height: 100%; }
+
+        /* Info Page */
+        #info-page { padding: 40px; overflow-y: auto; max-width: 800px; margin: 0 auto; line-height: 1.6; }
+        .info-card { background: #f1f2f6; padding: 20px; border-radius: 10px; margin-bottom: 20px; border-left: 5px solid var(--primary); }
+
+        /* Map Page */
+        #map { width: 100%; height: 100%; }
     </style>
 </head>
 <body>
 
-<div class="header">
-    <h1>Australia Exploration</h1>
+<header>
+    <button class="tab-btn active" onclick="showPage('mindmap')">Mindmap</button>
+    <button class="tab-btn" onclick="showPage('info-page')">Infos</button>
+    <button class="tab-btn" onclick="showPage('map-page')">Google Maps</button>
+</header>
+
+<div id="mindmap" class="page active">
+    <div class="markmap">
+        <script type="text/template">
+---
+markmap:
+  colorFreezeLevel: 2
+---
+# Root node
+## GTA YouTubers
+- <img src="https://img.icons8.com/color/48/grand-theft-auto-v.png" width="20"/> Cool stuff
+## Scarry animals
+- spiders 🕷️
+- Boxers 🦘
+## sydney
+- <img src="https://images.unsplash.com/photo-1506973035872-a4ec16b8e8d9?w=100" width="80" style="border-radius:5px"/>
+## wird outoff place mountains
+### Uluru
+- <img src="https://images.unsplash.com/photo-1529108190281-9a4f620bc2d8?w=100" width="80" style="border-radius:5px"/>
+## looks like a big island
+        </script>
+    </div>
 </div>
-<div id="mindmap"></div>
 
-<script type="text/javascript">
-    const nodes = new vis.DataSet([
-        // Root
-        { id: 1, label: 'Australia', shape: 'circle', color: '#2d3436', font: { color: 'white', size: 20 }, fixed: false },
+<div id="info-page" class="page">
+    <div class="info-card">
+        <h3>Lazy Notes</h3>
+        <p>Australia is basically just a big island with some wird outoff place mountains in the middle. Uluru is there. Its red.</p>
+    </div>
+    <div class="info-card">
+        <h3>Animals</h3>
+        <p>Everything wants to kill u. Spiders are huge. Kangaroos are basically boxers. Dont touch.</p>
+    </div>
+    <div class="info-card">
+        <h3>YouTube</h3>
+        <p>Lots of GTA YouTubers there for some reason. Maybe they like the chaos.</p>
+    </div>
+</div>
 
-        // GTA YouTubers (Red)
-        { id: 2, label: 'GTA YouTubers', color: { background: '#ff7675', border: '#d63031' }, shape: 'box', margin: 10 },
+<div id="map-page" class="page">
+    <div id="map"></div>
+</div>
 
-        // Geography (Blue)
-        { id: 3, label: 'Looks like a\nbig island', color: { background: '#74b9ff', border: '#0984e3' }, shape: 'box', margin: 10 },
+<script>
+    function showPage(pageId) {
+        document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+        
+        document.getElementById(pageId).classList.add('active');
+        event.currentTarget.classList.add('active');
 
-        // Cities (Purple)
-        { id: 4, label: 'Sydney', image: 'https://images.unsplash.com/photo-1506973035872-a4ec16b8e8d9?auto=format&fit=crop&w=150&q=80', shape: 'circularImage', color: { border: '#6c5ce7' } },
-
-        // Nature (Green)
-        { id: 5, label: 'Weird out of place\nmountains', color: { background: '#55efc4', border: '#00b894' }, shape: 'box', margin: 10 },
-        { id: 6, label: 'Uluru', image: 'https://images.unsplash.com/photo-1529108190281-9a4f620bc2d8?auto=format&fit=crop&w=150&q=80', shape: 'circularImage', color: { border: '#00b894' } },
-
-        // Scary Animals (Yellow)
-        { id: 7, label: 'Scary Animals', color: { background: '#ffeaa7', border: '#fdcb6e' }, shape: 'box', margin: 10 },
-        { id: 8, label: 'Spiders', image: 'https://images.unsplash.com/photo-1521320226546-87b106956014?auto=format&fit=crop&w=150&q=80', shape: 'circularImage', color: { border: '#fdcb6e' } },
-        { id: 9, label: 'Boxers (Kangaroos)', image: 'https://images.unsplash.com/photo-1521633393421-4d9f67645391?auto=format&fit=crop&w=150&q=80', shape: 'circularImage', color: { border: '#fdcb6e' } }
-    ]);
-
-    const edges = new vis.DataSet([
-        { from: 1, to: 2, color: '#d63031', width: 3 }, // Root to GTA
-        { from: 1, to: 3, color: '#0984e3', width: 3 }, // Root to Island
-        { from: 1, to: 4, color: '#6c5ce7', width: 3 }, // Root to Sydney
-        { from: 1, to: 5, color: '#00b894', width: 3 }, // Root to Mountains
-        { from: 5, to: 6, color: '#00b894', width: 2, dashes: true }, // Mountains to Uluru
-        { from: 1, to: 7, color: '#fdcb6e', width: 3 }, // Root to Scary
-        { from: 7, to: 8, color: '#fdcb6e', width: 2 }, // Scary to Spiders
-        { from: 7, to: 9, color: '#fdcb6e', width: 2 }  // Scary to Boxers
-    ]);
-
-    const container = document.getElementById('mindmap');
-    const data = { nodes: nodes, edges: edges };
-    
-    const options = {
-        nodes: {
-            font: { face: 'Inter' },
-            borderWidth: 2,
-            shadow: true
-        },
-        edges: {
-            smooth: { type: 'cubicBezier', forceDirection: 'horizontal', roundness: 0.5 },
-            shadow: true
-        },
-        physics: {
-            enabled: true,
-            barnesHut: {
-                gravitationalConstant: -2000,
-                centralGravity: 0.3,
-                springLength: 150
-            }
-        },
-        interaction: {
-            hover: true,
-            zoomView: true
+        // Fix Leaflet sizing when tab is switched
+        if(pageId === 'map-page') {
+            setTimeout(() => { map.invalidateSize(); }, 100);
         }
-    };
+    }
 
-    const network = new vis.Network(container, data, options);
+    // Initialize Map
+    var map = L.map('map').setView([-25.2744, 133.7751], 4);
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '© OpenStreetMap'
+    }).addTo(map);
+
+    // Add Uluru Marker
+    L.marker([-25.3444, 131.0369]).addTo(map)
+        .bindPopup('Uluru (The wird mountain)')
+        .openPopup();
 </script>
 
 </body>
