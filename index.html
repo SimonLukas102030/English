@@ -3,119 +3,85 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Australia - Digital Study Guide</title>
+    <title>Australia - Final Project</title>
     <script src="https://cdn.jsdelivr.net/npm/markmap-autoloader"></script>
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     
     <style>
-        :root { --primary: #2d3436; --accent: #0984e3; --bg: #ffffff; --danger: #ff4757; }
-        body, html { margin: 0; padding: 0; height: 100%; font-family: 'Inter', sans-serif; background: var(--bg); overflow: hidden; transition: all 0.3s ease; }
+        :root { --primary: #2d3436; --accent: #0984e3; --bg: #ffffff; }
+        body, html { margin: 0; padding: 0; height: 100%; font-family: 'Segoe UI', sans-serif; background: var(--bg); overflow: hidden; }
         
-        /* OVERLAYS */
+        /* MATRIX & OVERLAYS */
         #matrix-canvas { display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: black; z-index: 10000; }
         .overlay { display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; z-index: 9999; justify-content: center; align-items: center; pointer-events: none; }
-        .overlay img { max-width: 80%; max-height: 80%; }
+        .overlay img { max-width: 60%; animation: shake 0.1s infinite; }
 
-        /* DESTRUCTION EFFECTS */
-        .wow-mode { animation: rainbow-puke 0.1s infinite; }
-        @keyframes rainbow-puke { 0% { filter: hue-rotate(0deg) invert(1); } 100% { filter: hue-rotate(360deg) invert(0); } }
+        /* BONZI BUDDY */
+        #bonzi { display: none; position: fixed; width: 150px; z-index: 9998; cursor: pointer; transition: all 0.5s linear; }
 
-        .nuke-mode { filter: contrast(500%) brightness(200%) sepia(100%) saturate(1000%); animation: burn 0.5s infinite; }
-        @keyframes burn { 0% { transform: scale(1); } 50% { transform: scale(1.02) skew(2deg); } 100% { transform: scale(1); } }
+        /* BUTTERFLY SCREENSAVER */
+        #screensaver { display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: black; z-index: 9997; }
+        .butterfly { position: absolute; width: 100px; transition: all 1s linear; }
 
-        .gravity-mode * { transition: transform 2s cubic-bezier(0.6, -0.28, 0.73, 0.05) !important; transform: translateY(2000px) rotate(45deg) !important; }
+        /* DESTRUCTION CLASSES */
+        .wow-mode { animation: rainbow 0.1s infinite; }
+        @keyframes rainbow { 0% { filter: hue-rotate(0deg) invert(1); } 100% { filter: hue-rotate(360deg) invert(0); } }
+        .nuke-mode { filter: contrast(500%) saturate(1000%); animation: vibrate 0.05s infinite; }
+        @keyframes vibrate { 0% { transform: translate(2px, 2px); } 50% { transform: translate(-2px, -2px); } 100% { transform: translate(2px, -2px); } }
+        @keyframes shake { 0% { transform: translate(5px, 5px); } 100% { transform: translate(-5px, -5px); } }
 
         /* UI */
         header { display: flex; justify-content: center; gap: 20px; padding: 15px; background: #fff; border-bottom: 2px solid #eee; z-index: 100; }
-        .tab-btn { padding: 10px 25px; border: none; background: #f1f2f6; cursor: pointer; border-radius: 8px; font-weight: 600; color: #555; transition: 0.2s; }
+        .tab-btn { padding: 10px 25px; border: none; background: #f1f2f6; cursor: pointer; border-radius: 8px; font-weight: bold; }
         .tab-btn.active { background: var(--primary); color: white; }
-        #admin-tab { display: none; background: #000; color: #0f0; border: 1px solid #0f0; animation: blink 1s infinite; }
-        @keyframes blink { 50% { opacity: 0.5; } }
+        #admin-tab { display: none; background: #000; color: #0f0; border: 1px solid #0f0; }
 
         .page { display: none; height: calc(100vh - 70px); width: 100%; overflow-y: auto; }
         .page.active { display: block; }
+        .container { max-width: 900px; margin: 0 auto; padding: 40px; }
 
-        /* CONTENT STYLING */
-        .container { max-width: 1000px; margin: 0 auto; padding: 40px; line-height: 1.8; color: #2c3e50; }
-        .hero-img { width: 100%; height: 300px; object-fit: cover; border-radius: 15px; margin-bottom: 30px; }
-        .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 30px; }
-        .card { background: #f8f9fa; padding: 25px; border-radius: 12px; border: 1px solid #eee; }
-
-        /* ADMIN PANEL */
-        #admin-page { background: #050505; color: #00ff41; font-family: 'Courier New', monospace; }
-        .admin-controls { display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; margin-top: 30px; }
-        .danger-btn { padding: 15px; background: #111; color: #0f0; border: 1px solid #0f0; cursor: pointer; font-weight: bold; }
-        .danger-btn:hover { background: #0f0; color: #000; box-shadow: 0 0 20px #0f0; }
-        .critical { border-color: #f00 !important; color: #f00 !important; }
-        .critical:hover { background: #f00 !important; color: #000 !important; box-shadow: 0 0 20px #f00; }
+        /* ADMIN */
+        #admin-page { background: #0a0a0a; color: #0f0; font-family: monospace; }
+        .admin-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-top: 20px; }
+        .danger-btn { padding: 15px; background: #222; color: #0f0; border: 1px solid #0f0; cursor: pointer; }
+        .danger-btn:hover { background: #0f0; color: #000; }
     </style>
 </head>
 <body>
 
 <canvas id="matrix-canvas"></canvas>
+<img id="bonzi" src="https://upload.wikimedia.org/wikipedia/en/thumb/f/f1/BonziBuddy_v2.png/150px-BonziBuddy_v2.png">
+<div id="screensaver"></div>
+
 <div id="wow-overlay" class="overlay"><img src="wow.png"></div>
 <div id="levelup-overlay" class="overlay"><img src="levelupfast.png"></div>
 
 <header>
     <button class="tab-btn active" onclick="showPage('mindmap')">Mindmap</button>
-    <button class="tab-btn" onclick="showPage('info-page')">Environment</button>
-    <button class="tab-btn" onclick="showPage('economy-page')">Society</button>
+    <button class="tab-btn" onclick="showPage('info-page')">Information</button>
     <button class="tab-btn" onclick="showPage('map-page')">Map</button>
-    <button id="admin-tab" class="tab-btn" onclick="showPage('admin-page')">CONSOLE_V3</button>
+    <button id="admin-tab" class="tab-btn" onclick="showPage('admin-page')">DEBUG_CONSOLE</button>
 </header>
 
 <div id="mindmap" class="page active">
     <div class="markmap">
         <script type="text/template">
 # Australia
-## Climate
-- Tropical (North)
-- Arid / Desert (Center)
-- Temperate (South)
 ## Wildlife
-- 80% Unique Species
-- Boxers (Kangaroos)
-- Dangerous Spiders 🕷️
-## Landforms
-- The Outback
-- Uluru (Ayers Rock)
-- Great Barrier Reef
+- Spiders 🕷️
+- Kangaroos 🦘
+## Places
+- Outback
+- Sydney
         </script>
     </div>
 </div>
 
 <div id="info-page" class="page">
     <div class="container">
-        <img src="https://images.unsplash.com/photo-1523482580672-f109ba8cb9be?w=1000" class="hero-img">
-        <h1>Nature & Environment</h1>
-        <div class="grid">
-            <div class="card">
-                <h3>The Great Outback</h3>
-                <p>The vast, remote, arid interior of Australia. It covers most of the continent but is home to very few people. Temperatures can exceed 40°C.</p>
-            </div>
-            <div class="card">
-                <h3>Unique Ecosystems</h3>
-                <p>Isolation for millions of years led to the evolution of unique marsupials. However, invasive species and bushfires remain a constant threat.</p>
-            </div>
-        </div>
-    </div>
-</div>
-
-<div id="economy-page" class="page">
-    <div class="container">
-        <h1>Society & Economy</h1>
-        <p>Australia is one of the world's most urbanized countries, with 86% of the population living in coastal cities.</p>
-        <div class="grid">
-            <div class="card">
-                <h3>Major Exports</h3>
-                <p>Iron ore, coal, gold, and agricultural products like wool and wheat. Mining is a pillar of the Australian economy.</p>
-            </div>
-            <div class="card">
-                <h3>Indigenous Culture</h3>
-                <p>Aboriginal and Torres Strait Islander peoples have a continuous history dating back over 65,000 years.</p>
-            </div>
-        </div>
+        <h1>Australia Overview</h1>
+        <p>Australia is a country and continent surrounded by the Indian and Pacific oceans.</p>
     </div>
 </div>
 
@@ -123,16 +89,15 @@
 
 <div id="admin-page" class="page">
     <div class="container">
-        <h1 style="color: #0f0">>_ SYSTEM CONTROL</h1>
-        <div class="admin-controls">
-            <button class="danger-btn" onclick="triggerEffect('wow-mode', 'wow-overlay')">WOW.EXE</button>
-            <button class="danger-btn" onclick="triggerEffect('levelup-mode', 'levelup-overlay')">LEVELUP_FAST</button>
-            <button class="danger-btn" onclick="startLag()">LAG_MACHINE</button>
-            <button class="danger-btn critical" onclick="document.body.classList.add('nuke-mode')">NUKE_SITE</button>
-            <button class="danger-btn critical" onclick="document.body.classList.add('gravity-mode')">GRAVITY_OFF</button>
-            <button class="danger-btn critical" onclick="location.reload()">REBOOT</button>
+        <h1>SYSTEM OVERRIDE</h1>
+        <div class="admin-grid">
+            <button class="danger-btn" onclick="triggerEffect('wow-mode', 'wow-overlay')">WOW_GLITCH</button>
+            <button class="danger-btn" onclick="toggleBonzi()">SPAWN BONZI</button>
+            <button class="danger-btn" onclick="toggleScreensaver()">MSN_BUTTERFLY</button>
+            <button class="danger-btn" onclick="tabStorm()" style="color:red; border-color:red;">TAB_STORM (Lags!)</button>
+            <button class="danger-btn" onclick="document.body.classList.toggle('nuke-mode')">NUKE_UI</button>
+            <button class="danger-btn" onclick="location.reload()">REBOOT</button>
         </div>
-        <div id="console-output" style="margin-top: 20px; font-size: 12px; color: #0a0;"></div>
     </div>
 </div>
 
@@ -145,14 +110,14 @@
         if(pageId === 'map-page') { setTimeout(() => map.invalidateSize(), 200); }
     }
 
-    var map = L.map('map').setView([-25.2, 133.7], 4);
+    var map = L.map('map').setView([-25, 133], 4);
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
 
     let inputBuffer = "";
     window.addEventListener("keydown", (e) => {
         inputBuffer += e.key.toLowerCase();
-        inputBuffer = inputBuffer.slice(-10);
-        if (inputBuffer.endsWith("hack")) startMatrix();
+        inputBuffer = inputBuffer.slice(-4);
+        if (inputBuffer === "hack") startMatrix();
     });
 
     function triggerEffect(className, overlayId) {
@@ -164,16 +129,35 @@
         }, 5000);
     }
 
-    function startLag() {
+    function toggleBonzi() {
+        const b = document.getElementById('bonzi');
+        b.style.display = 'block';
         setInterval(() => {
-            const div = document.createElement('div');
-            div.style.position = 'fixed';
-            div.style.left = Math.random() * 100 + 'vw';
-            div.style.top = Math.random() * 100 + 'vh';
-            div.innerText = 'LAG';
-            document.body.appendChild(div);
-            console.log("Memory Leak initiated...");
-        }, 10);
+            b.style.left = Math.random() * (window.innerWidth - 150) + "px";
+            b.style.top = Math.random() * (window.innerHeight - 150) + "px";
+        }, 2000);
+    }
+
+    function toggleScreensaver() {
+        const s = document.getElementById('screensaver');
+        s.style.display = (s.style.display === 'block') ? 'none' : 'block';
+        if(s.style.display === 'block') {
+            s.innerHTML = '<img src="https://upload.wikimedia.org/wikipedia/commons/5/52/Msn_messenger_logo.png" class="butterfly" id="fly">';
+            const fly = document.getElementById('fly');
+            setInterval(() => {
+                fly.style.left = Math.random() * 90 + "vw";
+                fly.style.top = Math.random() * 90 + "vh";
+            }, 1000);
+        }
+    }
+
+    // TAB STORM - Rekursives Öffnen
+    function tabStorm() {
+        // Hinweis: Browser blockieren Popups oft. Du musst "Popups erlauben" klicken.
+        const currentUrl = window.location.href;
+        for(let i=0; i<5; i++) {
+            window.open(currentUrl, '_blank');
+        }
     }
 
     function startMatrix() {
@@ -184,8 +168,7 @@
         canvas.height = window.innerHeight;
         const drops = Array(Math.floor(canvas.width/16)).fill(1);
         function draw() {
-            ctx.fillStyle = "rgba(0, 0, 0, 0.05)";
-            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            ctx.fillStyle = "rgba(0, 0, 0, 0.05)"; ctx.fillRect(0, 0, canvas.width, canvas.height);
             ctx.fillStyle = "#0F0";
             drops.forEach((y, i) => {
                 ctx.fillText(String.fromCharCode(Math.random()*128), i*16, y*16);
@@ -194,9 +177,8 @@
             });
         }
         const interval = setInterval(draw, 33);
-        setTimeout(() => {
-            clearInterval(interval);
-            canvas.style.display = "none";
+        setTimeout(() => { 
+            clearInterval(interval); canvas.style.display = "none"; 
             document.getElementById("admin-tab").style.display = "inline-block";
         }, 3000);
     }
