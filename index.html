@@ -3,49 +3,52 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Australia - Study Project</title>
+    <title>Australia - Digital Study Guide</title>
     <script src="https://cdn.jsdelivr.net/npm/markmap-autoloader"></script>
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     
     <style>
-        :root { --primary: #2d3436; --accent: #0984e3; --bg: #ffffff; }
-        body, html { margin: 0; padding: 0; height: 100%; font-family: 'Segoe UI', sans-serif; background: var(--bg); overflow: hidden; }
+        :root { --primary: #2d3436; --accent: #0984e3; --bg: #ffffff; --danger: #ff4757; }
+        body, html { margin: 0; padding: 0; height: 100%; font-family: 'Inter', sans-serif; background: var(--bg); overflow: hidden; transition: all 0.3s ease; }
         
+        /* OVERLAYS */
         #matrix-canvas { display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: black; z-index: 10000; }
-        .wow-mode { animation: rainbow-puke 0.2s infinite alternate; }
-        @keyframes rainbow-puke {
-            0% { filter: hue-rotate(0deg) invert(0.5) contrast(200%); background: #ff00ff; }
-            100% { filter: hue-rotate(360deg) invert(0) contrast(500%); background: #00ff00; }
-        }
-        .levelup-mode { animation: level-flash 0.3s infinite; }
-        @keyframes level-flash {
-            0% { background: #ffffff; filter: brightness(1); }
-            50% { background: #2ecc71; filter: brightness(1.5); }
-            100% { background: #ffffff; filter: brightness(1); }
-        }
-        .shake-active { animation: heavy-shake 0.1s infinite; }
-        @keyframes heavy-shake {
-            0% { transform: translate(5px, 5px); }
-            50% { transform: translate(-10px, -5px); }
-            100% { transform: translate(5px, -5px); }
-        }
-        .inverted { filter: invert(1); }
-
         .overlay { display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; z-index: 9999; justify-content: center; align-items: center; pointer-events: none; }
         .overlay img { max-width: 80%; max-height: 80%; }
 
-        header { display: flex; justify-content: center; gap: 20px; padding: 15px; background: #f8f9fa; border-bottom: 1px solid #ddd; z-index: 100; }
-        .tab-btn { padding: 8px 20px; border: none; background: none; cursor: pointer; font-size: 16px; border-radius: 5px; }
-        .tab-btn.active { background: var(--primary); color: white; }
-        #admin-tab { display: none; border: 1px solid #e74c3c; color: #e74c3c; }
+        /* DESTRUCTION EFFECTS */
+        .wow-mode { animation: rainbow-puke 0.1s infinite; }
+        @keyframes rainbow-puke { 0% { filter: hue-rotate(0deg) invert(1); } 100% { filter: hue-rotate(360deg) invert(0); } }
 
-        .page { display: none; height: calc(100vh - 70px); width: 100%; }
+        .nuke-mode { filter: contrast(500%) brightness(200%) sepia(100%) saturate(1000%); animation: burn 0.5s infinite; }
+        @keyframes burn { 0% { transform: scale(1); } 50% { transform: scale(1.02) skew(2deg); } 100% { transform: scale(1); } }
+
+        .gravity-mode * { transition: transform 2s cubic-bezier(0.6, -0.28, 0.73, 0.05) !important; transform: translateY(2000px) rotate(45deg) !important; }
+
+        /* UI */
+        header { display: flex; justify-content: center; gap: 20px; padding: 15px; background: #fff; border-bottom: 2px solid #eee; z-index: 100; }
+        .tab-btn { padding: 10px 25px; border: none; background: #f1f2f6; cursor: pointer; border-radius: 8px; font-weight: 600; color: #555; transition: 0.2s; }
+        .tab-btn.active { background: var(--primary); color: white; }
+        #admin-tab { display: none; background: #000; color: #0f0; border: 1px solid #0f0; animation: blink 1s infinite; }
+        @keyframes blink { 50% { opacity: 0.5; } }
+
+        .page { display: none; height: calc(100vh - 70px); width: 100%; overflow-y: auto; }
         .page.active { display: block; }
-        #admin-page { padding: 40px; background: #1a1a1a; color: #fff; overflow-y: auto; }
-        .admin-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px; max-width: 600px; margin: 0 auto; }
-        .hack-btn { padding: 20px; font-size: 14px; cursor: pointer; background: #333; color: white; border: 1px solid #555; border-radius: 8px; }
-        .hack-btn:hover { background: #444; border-color: #00ff00; }
+
+        /* CONTENT STYLING */
+        .container { max-width: 1000px; margin: 0 auto; padding: 40px; line-height: 1.8; color: #2c3e50; }
+        .hero-img { width: 100%; height: 300px; object-fit: cover; border-radius: 15px; margin-bottom: 30px; }
+        .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 30px; }
+        .card { background: #f8f9fa; padding: 25px; border-radius: 12px; border: 1px solid #eee; }
+
+        /* ADMIN PANEL */
+        #admin-page { background: #050505; color: #00ff41; font-family: 'Courier New', monospace; }
+        .admin-controls { display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; margin-top: 30px; }
+        .danger-btn { padding: 15px; background: #111; color: #0f0; border: 1px solid #0f0; cursor: pointer; font-weight: bold; }
+        .danger-btn:hover { background: #0f0; color: #000; box-shadow: 0 0 20px #0f0; }
+        .critical { border-color: #f00 !important; color: #f00 !important; }
+        .critical:hover { background: #f00 !important; color: #000 !important; box-shadow: 0 0 20px #f00; }
     </style>
 </head>
 <body>
@@ -56,44 +59,80 @@
 
 <header>
     <button class="tab-btn active" onclick="showPage('mindmap')">Mindmap</button>
-    <button class="tab-btn" onclick="showPage('info-page')">Information</button>
-    <button class="tab-btn" onclick="showPage('map-page')">Geography</button>
-    <button id="admin-tab" class="tab-btn" onclick="showPage('admin-page')">INTERNAL_SYSTEM</button>
+    <button class="tab-btn" onclick="showPage('info-page')">Environment</button>
+    <button class="tab-btn" onclick="showPage('economy-page')">Society</button>
+    <button class="tab-btn" onclick="showPage('map-page')">Map</button>
+    <button id="admin-tab" class="tab-btn" onclick="showPage('admin-page')">CONSOLE_V3</button>
 </header>
 
 <div id="mindmap" class="page active">
     <div class="markmap">
         <script type="text/template">
-# Australia Exploration
-## Fauna
-- Dangerous Spiders
-- Boxing Kangaroos
-## Geography
-- Uluru (The Red Rock)
+# Australia
+## Climate
+- Tropical (North)
+- Arid / Desert (Center)
+- Temperate (South)
+## Wildlife
+- 80% Unique Species
+- Boxers (Kangaroos)
+- Dangerous Spiders 🕷️
+## Landforms
+- The Outback
+- Uluru (Ayers Rock)
 - Great Barrier Reef
         </script>
     </div>
 </div>
 
 <div id="info-page" class="page">
-    <div style="padding: 50px; max-width: 800px; margin: 0 auto;">
-        <h2>Australia Overview</h2>
-        <p>Australia is a continent and country surrounded by the Indian and Pacific oceans. Its major cities – Sydney, Brisbane, Melbourne, Perth, Adelaide – are coastal. Its capital, Canberra, is inland.</p>
-        <p>The country is known for its Sydney Opera House, the Great Barrier Reef, and a vast interior desert wilderness called the Outback.</p>
+    <div class="container">
+        <img src="https://images.unsplash.com/photo-1523482580672-f109ba8cb9be?w=1000" class="hero-img">
+        <h1>Nature & Environment</h1>
+        <div class="grid">
+            <div class="card">
+                <h3>The Great Outback</h3>
+                <p>The vast, remote, arid interior of Australia. It covers most of the continent but is home to very few people. Temperatures can exceed 40°C.</p>
+            </div>
+            <div class="card">
+                <h3>Unique Ecosystems</h3>
+                <p>Isolation for millions of years led to the evolution of unique marsupials. However, invasive species and bushfires remain a constant threat.</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="economy-page" class="page">
+    <div class="container">
+        <h1>Society & Economy</h1>
+        <p>Australia is one of the world's most urbanized countries, with 86% of the population living in coastal cities.</p>
+        <div class="grid">
+            <div class="card">
+                <h3>Major Exports</h3>
+                <p>Iron ore, coal, gold, and agricultural products like wool and wheat. Mining is a pillar of the Australian economy.</p>
+            </div>
+            <div class="card">
+                <h3>Indigenous Culture</h3>
+                <p>Aboriginal and Torres Strait Islander peoples have a continuous history dating back over 65,000 years.</p>
+            </div>
+        </div>
     </div>
 </div>
 
 <div id="map-page" class="page"><div id="map" style="height: 100%;"></div></div>
 
 <div id="admin-page" class="page">
-    <h2 style="text-align:center; color: #00ff00;">CONTROL PANEL v1.4</h2>
-    <div class="admin-grid">
-        <button class="hack-btn" onclick="triggerEffect('wow-mode', 'wow-overlay', 'wow.mp3')">WOW CHAOS</button>
-        <button class="hack-btn" onclick="triggerEffect('levelup-mode', 'levelup-overlay', 'levelup.mp3')">LEVEL UP FAST</button>
-        <button class="hack-btn" onclick="document.body.classList.toggle('shake-active')">TOGGLE SHAKE</button>
-        <button class="hack-btn" onclick="document.body.classList.toggle('inverted')">INVERT COLORS</button>
-        <button class="hack-btn" onclick="glitchText()">GLITCH TEXT</button>
-        <button class="hack-btn" onclick="location.reload()">EMERGENCY RESET</button>
+    <div class="container">
+        <h1 style="color: #0f0">>_ SYSTEM CONTROL</h1>
+        <div class="admin-controls">
+            <button class="danger-btn" onclick="triggerEffect('wow-mode', 'wow-overlay')">WOW.EXE</button>
+            <button class="danger-btn" onclick="triggerEffect('levelup-mode', 'levelup-overlay')">LEVELUP_FAST</button>
+            <button class="danger-btn" onclick="startLag()">LAG_MACHINE</button>
+            <button class="danger-btn critical" onclick="document.body.classList.add('nuke-mode')">NUKE_SITE</button>
+            <button class="danger-btn critical" onclick="document.body.classList.add('gravity-mode')">GRAVITY_OFF</button>
+            <button class="danger-btn critical" onclick="location.reload()">REBOOT</button>
+        </div>
+        <div id="console-output" style="margin-top: 20px; font-size: 12px; color: #0a0;"></div>
     </div>
 </div>
 
@@ -103,7 +142,7 @@
         document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
         document.getElementById(pageId).classList.add('active');
         event.currentTarget.classList.add('active');
-        if(pageId === 'map-page') { setTimeout(() => { map.invalidateSize(); }, 100); }
+        if(pageId === 'map-page') { setTimeout(() => map.invalidateSize(), 200); }
     }
 
     var map = L.map('map').setView([-25.2, 133.7], 4);
@@ -114,12 +153,9 @@
         inputBuffer += e.key.toLowerCase();
         inputBuffer = inputBuffer.slice(-10);
         if (inputBuffer.endsWith("hack")) startMatrix();
-        if (inputBuffer.endsWith("wow")) triggerEffect('wow-mode', 'wow-overlay');
-        if (inputBuffer.endsWith("levelupfast")) triggerEffect('levelup-mode', 'levelup-overlay');
     });
 
-    function triggerEffect(className, overlayId, soundFile) {
-        if(soundFile) { new Audio(soundFile).play(); }
+    function triggerEffect(className, overlayId) {
         document.body.classList.add(className);
         document.getElementById(overlayId).style.display = 'flex';
         setTimeout(() => {
@@ -128,11 +164,16 @@
         }, 5000);
     }
 
-    function glitchText() {
-        const elements = document.querySelectorAll('p, h1, h2, span');
-        elements.forEach(el => {
-            el.innerText = Math.random().toString(36).substring(2, 15);
-        });
+    function startLag() {
+        setInterval(() => {
+            const div = document.createElement('div');
+            div.style.position = 'fixed';
+            div.style.left = Math.random() * 100 + 'vw';
+            div.style.top = Math.random() * 100 + 'vh';
+            div.innerText = 'LAG';
+            document.body.appendChild(div);
+            console.log("Memory Leak initiated...");
+        }, 10);
     }
 
     function startMatrix() {
@@ -141,22 +182,21 @@
         canvas.style.display = "block";
         canvas.width = window.innerWidth;
         canvas.height = window.innerHeight;
-        const chars = "010101010101";
         const drops = Array(Math.floor(canvas.width/16)).fill(1);
         function draw() {
             ctx.fillStyle = "rgba(0, 0, 0, 0.05)";
             ctx.fillRect(0, 0, canvas.width, canvas.height);
             ctx.fillStyle = "#0F0";
-            for (let i = 0; i < drops.length; i++) {
-                ctx.fillText(chars[Math.floor(Math.random()*chars.length)], i*16, drops[i]*16);
-                if (drops[i]*16 > canvas.height && Math.random() > 0.975) drops[i] = 0;
+            drops.forEach((y, i) => {
+                ctx.fillText(String.fromCharCode(Math.random()*128), i*16, y*16);
+                if (y*16 > canvas.height && Math.random() > 0.975) drops[i] = 0;
                 drops[i]++;
-            }
+            });
         }
         const interval = setInterval(draw, 33);
-        setTimeout(() => { 
-            clearInterval(interval); 
-            canvas.style.display = "none"; 
+        setTimeout(() => {
+            clearInterval(interval);
+            canvas.style.display = "none";
             document.getElementById("admin-tab").style.display = "inline-block";
         }, 3000);
     }
