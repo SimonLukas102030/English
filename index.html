@@ -153,12 +153,10 @@
 
     // TAB STORM - Rekursives Öffnen
     function tabStorm() {
-        // Hinweis: Browser blockieren Popups oft. Du musst "Popups erlauben" klicken.
-        const currentUrl = window.location.href;
-        for(let i=0; i<5; i++) {
-            window.open(currentUrl, '_blank');
-        }
-    }
+    // Öffnet die erste tab.html
+    // WICHTIG: Du musst im Browser "Popups erlauben" für diese Seite aktivieren!
+    window.open('tab.html', '_blank', 'width=200,height=200');
+}
 
     function startMatrix() {
         const canvas = document.getElementById("matrix-canvas");
