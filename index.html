@@ -3,183 +3,185 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Australia Project</title>
-    <script src="https://cdn.jsdelivr.net/npm/markmap-autoloader"></script>
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-    
+    <title>Australia - Geography & Culture</title>
+    <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
     <style>
         :root {
-            --primary: #2d3436;
-            --accent: #0984e3;
-            --bg: #ffffff;
+            --primary: #003366;
+            --accent: #e74c3c;
+            --bg: #f4f7f6;
         }
-        body, html { margin: 0; padding: 0; height: 100%; font-family: 'Segoe UI', sans-serif; background: var(--bg); overflow: hidden; transition: filter 0.1s; }
-        
-        /* MATRIX EFFECT */
-        #matrix-canvas {
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg);
+            margin: 0;
+            padding: 20px;
+            transition: all 0.3s ease;
+        }
+
+        /* Normale Website Styles */
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            background: white;
+            padding: 40px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+
+        h1 {
+            color: var(--primary);
+            text-align: center;
+            cursor: pointer; /* Versteckter Trigger */
+            user-select: none;
+        }
+
+        .task-box {
+            background: #fff8e1;
+            padding: 15px;
+            border-left: 4px solid #ffc107;
+            margin-bottom: 30px;
+        }
+
+        .image-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-top: 30px;
+        }
+
+        .img-card img {
+            width: 100%;
+            height: 150px;
+            object-fit: cover;
+            border-radius: 4px;
+        }
+
+        /* Hacker Terminal Styles (Initial versteckt) */
+        #hacker-overlay {
             display: none;
             position: fixed;
-            top: 0; left: 0; width: 100vw; height: 100vh;
-            background: black;
-            z-index: 10000;
-        }
-
-        /* WOW EFFECT */
-        .wow-mode { animation: rainbow-puke 0.2s infinite alternate; }
-        @keyframes rainbow-puke {
-            0% { filter: hue-rotate(0deg) invert(0.5) contrast(200%); background: #ff00ff; }
-            100% { filter: hue-rotate(360deg) invert(0) contrast(500%); background: #00ff00; }
-        }
-
-        /* LEVEL UP EFFECT */
-        .levelup-mode { animation: level-flash 0.3s infinite; }
-        @keyframes level-flash {
-            0% { background: #ffffff; filter: brightness(1); }
-            50% { background: #2ecc71; filter: brightness(1.5) contrast(150%); }
-            100% { background: #ffffff; filter: brightness(1); }
-        }
-
-        .overlay {
-            display: none;
-            position: fixed;
-            top: 0; left: 0; width: 100vw; height: 100vh;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 10, 0, 0.95);
+            color: #0f0;
+            font-family: 'Courier New', monospace;
+            padding: 20px;
+            box-sizing: border-box;
             z-index: 9999;
-            justify-content: center; align-items: center;
-            pointer-events: none;
+            overflow: hidden;
         }
-        .overlay img { max-width: 80%; max-height: 80%; animation: shake 0.1s infinite; }
-        @keyframes shake {
-            0% { transform: translate(2px, 2px); }
-            50% { transform: translate(-4px, -3px); }
+
+        .scanline {
+            width: 100%;
+            height: 2px;
+            background: rgba(0, 255, 0, 0.1);
+            position: absolute;
+            animation: scan 4s linear infinite;
+        }
+
+        @keyframes scan {
+            0% { top: 0; }
+            100% { top: 100%; }
+        }
+
+        .terminal-text {
+            text-shadow: 0 0 5px #0f0;
+            white-space: pre-wrap;
+        }
+
+        .glitch {
+            animation: glitch-anim 0.2s infinite;
+        }
+
+        @keyframes glitch-anim {
+            0% { transform: translate(0); }
+            50% { transform: translate(-2px, 2px); }
             100% { transform: translate(2px, -2px); }
         }
-
-        /* Layout */
-        header {
-            display: flex; justify-content: center; gap: 20px; padding: 15px;
-            background: #f8f9fa; border-bottom: 1px solid #ddd; z-index: 100;
-        }
-        .tab-btn { padding: 8px 20px; border: none; background: none; cursor: pointer; font-size: 16px; border-radius: 5px; transition: 0.2s; }
-        .tab-btn.active { background: var(--primary); color: white; }
-        #admin-tab { display: none; color: #2ecc71; font-weight: bold; border: 1px dashed #2ecc71; }
-
-        .page { display: none; height: calc(100vh - 70px); width: 100%; }
-        .page.active { display: block; }
-        .markmap { width: 100%; height: 100%; }
-        
-        /* Admin Page */
-        #admin-page { padding: 40px; text-align: center; background: #1e1e1e; color: #00ff00; }
-        .hack-btn { padding: 15px 30px; margin: 10px; font-size: 18px; cursor: pointer; background: #333; color: #0f0; border: 1px solid #0f0; }
-        .hack-btn:hover { background: #0f0; color: #000; }
     </style>
 </head>
 <body>
 
-<canvas id="matrix-canvas"></canvas>
+<div class="container" id="main-content">
+    <h1 onclick="activateTerminal()">Australia - Educational Portfolio</h1>
+    
+    <div class="task-box">
+        <strong>Task:</strong> Explore the diverse aspects of Australia. Below is the mind map covering landmarks, wildlife, and environmental challenges.
+    </div>
 
-<div id="wow-overlay" class="overlay"> <img src="wow.png" alt="WOW"> </div>
-<div id="levelup-overlay" class="overlay"> <img src="levelupfast.png" alt="LEVEL UP"> </div>
+    <div class="mermaid">
+    mindmap
+      root((Australia))
+        Geography
+            Great Barrier Reef
+            The Outback
+        Culture
+            Sydney Opera House
+            Cricket
+        Wildlife
+            Quokka
+            Kangaroo
+        Climate
+            Bushfires
+            Conservation
+    </div>
 
-<header>
-    <button class="tab-btn active" onclick="showPage('mindmap')">Mindmap</button>
-    <button class="tab-btn" onclick="showPage('info-page')">Infos</button>
-    <button class="tab-btn" onclick="showPage('map-page')">Google Maps</button>
-    <button id="admin-tab" class="tab-btn" onclick="showPage('admin-page')">ADMIN PANEL</button>
-</header>
-
-<div id="mindmap" class="page active">
-    <div class="markmap">
-        <script type="text/template">
-# Australia
-## GTA YouTubers
-- DarkViperAU
-## Scarry animals
-- spiders 🕷️
-- Boxers 🦘
-## Nature
-- wird mountains (Uluru)
-- Big island vibes
-        </script>
+    <div class="image-grid">
+        <div class="img-card"><img src="https://images.unsplash.com/photo-1529108190281-9a4f620bc2d8?w=300" alt="Uluru"><p>Uluru Rock</p></div>
+        <div class="img-card"><img src="https://images.unsplash.com/photo-1533411440124-7e8739943343?w=300" alt="Quokka"><p>Quokka</p></div>
+        <div class="img-card"><img src="https://images.unsplash.com/photo-1506755855567-92ff770e8d30?w=300" alt="Bushfire"><p>Environmental Issues</p></div>
     </div>
 </div>
 
-<div id="info-page" class="page">
-    <div style="padding:40px">
-        <h2>System Logs</h2>
-        <p>Type "hack" to access root.</p>
-    </div>
-</div>
-
-<div id="map-page" class="page"> <div id="map" style="height:100%"></div> </div>
-
-<div id="admin-page" class="page">
-    <h1>ROOT ACCESS GRANTED</h1>
-    <button class="hack-btn" onclick="triggerEffect('wow-mode', 'wow-overlay')">TRIGGER WOW</button>
-    <button class="hack-btn" onclick="triggerEffect('levelup-mode', 'levelup-overlay')">TRIGGER LEVELUP</button>
+<div id="hacker-overlay">
+    <div class="scanline"></div>
+    <div id="output" class="terminal-text"></div>
 </div>
 
 <script>
-    function showPage(pageId) {
-        document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-        document.getElementById(pageId).classList.add('active');
-        event.currentTarget.classList.add('active');
-        if(pageId === 'map-page') { setTimeout(() => { map.invalidateSize(); }, 100); }
+    mermaid.initialize({ startOnLoad: true, theme: 'neutral' });
+
+    function activateTerminal() {
+        document.getElementById('hacker-overlay').style.display = 'block';
+        document.body.style.overflow = 'hidden';
+        runTerminal();
     }
 
-    var map = L.map('map').setView([-25.2, 133.7], 4);
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
+    const logs = [
+        "> INITIALIZING EXPLOIT...",
+        "> ACCESSING SYDNEY_U_SERVER... SUCCESS",
+        "> BYPASSING REGIONAL FIREWALL [16259-DE]...",
+        "> DOWNLOADING ENCRYPTED AUSTRALIA_DATA...",
+        "> ERROR: BIOMETRIC SCAN FAILED...",
+        "> OVERRIDING...",
+        "> SYSTEM CRITICAL: BUSHFIRE_PROTOCOL_77",
+        "> INJECTING PACKETS INTO CLOUDFLARE NODE...",
+        "> EXTRACTING LOCATION: BRANDENBURG REGION...",
+        "> CONNECTION STABLE."
+    ];
 
-    let inputBuffer = "";
-    window.addEventListener("keydown", (e) => {
-        inputBuffer += e.key.toLowerCase();
-        inputBuffer = inputBuffer.slice(-15);
-        if (inputBuffer.endsWith("hack")) { startMatrix(); }
-        if (inputBuffer.endsWith("wow")) { triggerEffect('wow-mode', 'wow-overlay'); }
-        if (inputBuffer.endsWith("levelupfast")) { triggerEffect('levelup-mode', 'levelup-overlay'); }
-    });
-
-    function triggerEffect(className, overlayId) {
-        document.body.classList.add(className);
-        document.getElementById(overlayId).style.display = 'flex';
-        setTimeout(() => {
-            document.body.classList.remove(className);
-            document.getElementById(overlayId).style.display = 'none';
-        }, 5000);
-    }
-
-    function startMatrix() {
-        const canvas = document.getElementById("matrix-canvas");
-        const ctx = canvas.getContext("2d");
-        canvas.style.display = "block";
-        canvas.width = window.innerWidth;
-        canvas.height = window.innerHeight;
-
-        const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789$#@&*%".split("");
-        const fontSize = 16;
-        const columns = canvas.width / fontSize;
-        const drops = Array(Math.floor(columns)).fill(1);
-
-        function draw() {
-            ctx.fillStyle = "rgba(0, 0, 0, 0.05)";
-            ctx.fillRect(0, 0, canvas.width, canvas.height);
-            ctx.fillStyle = "#0F0";
-            ctx.font = fontSize + "px monospace";
-            for (let i = 0; i < drops.length; i++) {
-                const text = chars[Math.floor(Math.random() * chars.length)];
-                ctx.fillText(text, i * fontSize, drops[i] * fontSize);
-                if (drops[i] * fontSize > canvas.height && Math.random() > 0.975) drops[i] = 0;
-                drops[i]++;
-            }
+    let i = 0;
+    function runTerminal() {
+        const output = document.getElementById('output');
+        if (i < logs.length) {
+            output.innerHTML += logs[i] + "<br>";
+            i++;
+            setTimeout(runTerminal, 600);
+        } else {
+            setInterval(() => {
+                const randomHex = Math.random().toString(16).substring(2, 10).toUpperCase();
+                output.innerHTML += "DATA_STREAM_CHUNK [" + randomHex + "] RECEIVED...<br>";
+                output.scrollTop = output.scrollHeight;
+                if(Math.random() > 0.9) output.classList.add('glitch');
+                else output.classList.remove('glitch');
+            }, 100);
         }
-        const interval = setInterval(draw, 33);
-        setTimeout(() => {
-            clearInterval(interval);
-            canvas.style.display = "none";
-            document.getElementById("admin-tab").style.display = "inline-block";
-        }, 3000);
     }
 </script>
+
 </body>
 </html>
